@@ -1,7 +1,8 @@
 import React from 'react';
 
+import Piece from '../Piece';
+
 import * as S from './styles';
-import { theme } from '../../styles/theme';
 
 function renderCells() {
   const cells = [];
@@ -76,12 +77,10 @@ const pieces = [
 function renderPieces() {
   return pieces.map((piece) => {
     return (
-      <S.PieceContainer
-        color={
-          piece.player === 0 ? theme.colors.primary : theme.colors.secondary
-        }
+      <Piece
         x={piece.x}
         y={piece.y}
+        player={piece.player}
         key={`${piece.x}${piece.y}${piece.player}`}
       />
     );
@@ -98,4 +97,3 @@ const Board: React.FC = () => {
 };
 
 export default Board;
-
