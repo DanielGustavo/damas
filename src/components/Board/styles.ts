@@ -2,12 +2,20 @@ import styled from 'styled-components';
 import * as polished from 'polished';
 import { theme } from '../../styles/theme';
 
-export const Container = styled.div`
+type TContainer = {
+  turn: number;
+};
+
+export const Container = styled.div<TContainer>`
   display: grid;
   grid-template-columns: repeat(8, 88px);
   position: relative;
 
-  outline: 8px solid ${polished.shade(0.25)(theme.colors.gray)};
+  outline: 8px solid
+    ${({ turn }) =>
+      polished.lighten(0.05)(
+        turn === 1 ? theme.colors.secondary : theme.colors.primary
+      )};
   border-radius: 9px;
   outline-offset: -1px;
 `;

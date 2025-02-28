@@ -11,8 +11,13 @@ const Board: React.FC = () => {
   const { Cells } = renderUtils();
 
   return (
-    <S.Container>
-      <Pieces turn={turn} />
+    <S.Container turn={turn}>
+      <Pieces
+        turn={turn}
+        onMove={() => {
+          setTurn((state) => (state === 1 ? 0 : 1));
+        }}
+      />
 
       <Cells />
     </S.Container>

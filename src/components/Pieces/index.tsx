@@ -4,9 +4,10 @@ import Piece from '../Piece';
 
 type TPieces = {
   turn: number;
+  onMove: () => void;
 };
 
-const Pieces: React.FC<TPieces> = ({ turn }) => {
+const Pieces: React.FC<TPieces> = ({ turn, onMove }) => {
   const [pieces, setPieces] = useState([
     // PLAYER 0
 
@@ -60,6 +61,8 @@ const Pieces: React.FC<TPieces> = ({ turn }) => {
 
       return newState;
     });
+
+    onMove();
   }
 
   return (
