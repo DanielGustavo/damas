@@ -5,6 +5,7 @@ export const theme = {
     primary: '#c35052',
     secondary: '#5063c3',
     gray: '#4b4b4b',
+    success: '#91f07f',
   },
   spacing: {
     sm: '8px',
