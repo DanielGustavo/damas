@@ -27,6 +27,7 @@ export const theme = {
         subtitle: '1.2rem',
         default: '1rem',
         small: '0.6rem',
+        cta: '1.15rem',
       },
     },
   },

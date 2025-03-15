@@ -5,13 +5,14 @@ import { theme } from '../../styles/theme';
 import * as S from './styles';
 import { getPossibleMoves } from '../../services/getPossibleMoves';
 import { movePiece } from '../../services/movePiece';
+import { TPlayer } from '../Board';
 
 type TPiece = {
   x: number;
   y: number;
-  player: number;
+  player: TPlayer;
   itsTurn: boolean;
-  onMove: (player: number, curr: number[], next: number[]) => void;
+  onMove: (player: TPlayer, curr: number[], next: number[]) => void;
   onEat: (ids: number[]) => void;
   id: number;
 };
@@ -67,14 +68,14 @@ const Piece: React.FC<TPiece> = ({
           <S.PossibleCell
             x={cell.x}
             y={cell.y}
-            key={`${cell.x}${cell.y}possible${player}`}
+            key={`${cell.x}${cell.y}possible${player.id}`}
             onClick={async () => {
               setPossibleCells([]);
               onMove(player, [x, y], [cell.x, cell.y]);
 
               const response = await movePiece({ id, x: cell.x, y: cell.y });
               const eatenSource =
-                player === 0 ? response.jogador2 : response.jogador1;
+                player.id === 0 ? response.jogador2 : response.jogador1;
 
               const eatenIds = eatenSource
                 .filter((piece) => piece != null)
@@ -86,7 +87,7 @@ const Piece: React.FC<TPiece> = ({
         ))}
 
       <S.Container
-        color={player === 0 ? theme.colors.primary : theme.colors.secondary}
+        color={player.id === 0 ? theme.colors.primary : theme.colors.secondary}
         x={x}
         y={y}
         itsTurn={itsTurn}
@@ -99,7 +100,7 @@ const Piece: React.FC<TPiece> = ({
         }}
         ref={ref}
         selected={selected}
-        id={`${x}${y}${player}`}
+        id={`${x}${y}${player.id}`}
       />
     </>
   );
