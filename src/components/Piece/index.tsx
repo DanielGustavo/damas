@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { theme } from '../../styles/theme';
 
 import * as S from './styles';
+import { getPossibleMoves } from '../../services/getPossibleMoves';
+import { movePiece } from '../../services/movePiece';
 
 type TPiece = {
   x: number;
@@ -10,16 +12,22 @@ type TPiece = {
   player: number;
   itsTurn: boolean;
   onMove: (player: number, curr: number[], next: number[]) => void;
+  onEat: (ids: number[]) => void;
+  id: number;
 };
 
 type TCell = { x: number; y: number };
 
-const Piece: React.FC<TPiece> = ({ x, y, player, itsTurn, onMove }) => {
-  const [possibleCells, setPossibleCells] = useState<TCell[]>([
-    { x: x + 1, y: y + 1 },
-    { x: x + 2, y: y + 2 },
-    { x: x + 3, y: y + 3 },
-  ]);
+const Piece: React.FC<TPiece> = ({
+  x,
+  y,
+  player,
+  itsTurn,
+  onMove,
+  id,
+  onEat,
+}) => {
+  const [possibleCells, setPossibleCells] = useState<TCell[]>([]);
 
   const [selected, setSelected] = useState(false);
 
@@ -39,6 +47,19 @@ const Piece: React.FC<TPiece> = ({ x, y, player, itsTurn, onMove }) => {
     };
   }, []);
 
+  async function loadPossibleCells() {
+    const response = await getPossibleMoves({ id });
+
+    const parsedResponse = response
+      .filter((value) => value !== null)
+      .map((value) => ({
+        x: value.x,
+        y: value.y,
+      }));
+
+    setPossibleCells(parsedResponse);
+  }
+
   return (
     <>
       {selected &&
@@ -47,9 +68,19 @@ const Piece: React.FC<TPiece> = ({ x, y, player, itsTurn, onMove }) => {
             x={cell.x}
             y={cell.y}
             key={`${cell.x}${cell.y}possible${player}`}
-            onClick={() => {
+            onClick={async () => {
               setPossibleCells([]);
               onMove(player, [x, y], [cell.x, cell.y]);
+
+              const response = await movePiece({ id, x: cell.x, y: cell.y });
+              const eatenSource =
+                player === 0 ? response.jogador2 : response.jogador1;
+
+              const eatenIds = eatenSource
+                .filter((piece) => piece != null)
+                .map((piece) => piece.id);
+
+              onEat(eatenIds);
             }}
           />
         ))}
@@ -59,7 +90,13 @@ const Piece: React.FC<TPiece> = ({ x, y, player, itsTurn, onMove }) => {
         x={x}
         y={y}
         itsTurn={itsTurn}
-        onClick={() => itsTurn && setSelected(true)}
+        onClick={() => {
+          if (itsTurn) {
+            setSelected(true);
+          }
+
+          loadPossibleCells();
+        }}
         ref={ref}
         selected={selected}
         id={`${x}${y}${player}`}
