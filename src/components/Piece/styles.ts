@@ -8,6 +8,7 @@ type TContainer = {
   y: number;
   itsTurn: boolean;
   selected: boolean;
+  crown: boolean;
 };
 
 type TPossibleCell = {
@@ -22,7 +23,8 @@ export const Container = styled.div<TContainer>`
   left: ${({ x }) => x * 88}px;
 
   transform: translate(9px, 4px);
-  outline: 8px solid ${({ color }) => polished.shade(0.25)(color)};
+  outline: 8px solid
+    ${({ color, crown }) => (crown ? '#d0db30' : polished.shade(0.25)(color))};
   outline-offset: -8px;
 
   width: 70px;
@@ -30,7 +32,8 @@ export const Container = styled.div<TContainer>`
   background: ${({ color }) => color};
   border-radius: 100%;
 
-  box-shadow: 0px 7px 0px ${({ color }) => polished.shade(0.4)(color)};
+  box-shadow: 0px 7px 0px
+    ${({ color, crown }) => (crown ? '#f0ff1378' : polished.shade(0.4)(color))};
 
   transition: 200ms;
   pointer-events: none;
@@ -74,7 +77,7 @@ export const PossibleCell = styled.div<TPossibleCell>`
   width: 88px;
   height: 88px;
 
-  background: ${polished.transparentize(0.9)(theme.colors.success)};
+  background: ${polished.transparentize(0.5)(theme.colors.success)};
   border: ${polished.shade(0.4)(theme.colors.success)} 4px solid;
 
   cursor: pointer;

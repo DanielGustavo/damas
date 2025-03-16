@@ -102,7 +102,9 @@ function App() {
             disabled={
               !player1.name.length ||
               !player2.name.length ||
-              player1.name === player2.name
+              player1.name === player2.name ||
+              player1.name.toLowerCase() === 'bot' ||
+              (player2.name.toLowerCase() === 'bot' && !player2.bot)
             }
           >
             Iniciar <LogIn color={theme.colors.dark} size={'1.3rem'} />

@@ -88,6 +88,7 @@ const Piece: React.FC<TPiece> = ({
 
       <S.Container
         color={player.id === 0 ? theme.colors.primary : theme.colors.secondary}
+        crown={false}
         x={x}
         y={y}
         itsTurn={itsTurn}
