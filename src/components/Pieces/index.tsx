@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import Piece from '../Piece';
 import { TPlayer } from '../Board';
+import { endPlay } from '../../services/endPlay';
 
 type TPieces = {
   turn: TPlayer;
@@ -71,6 +72,24 @@ const Pieces: React.FC<TPieces> = ({ turn, onMove, player1, player2 }) => {
     });
   }
 
+  async function onEnd() {
+    let winner = undefined as undefined | number;
+
+    const player1Pieces = pieces.filter((p) => p.player.id === player1.id);
+    const player2Pieces = pieces.filter((p) => p.player.id === player2.id);
+
+    if (player1Pieces.length > player2Pieces.length) {
+      winner = player1.id;
+    } else if (player1Pieces.length < player2Pieces.length) {
+      winner = player2.id;
+    }
+
+    console.log({ player1Pieces, player2Pieces, player1, player2, pieces });
+
+    await endPlay();
+    alert(winner);
+  }
+
   return (
     <>
       {pieces.map((piece) => {
@@ -84,6 +103,7 @@ const Pieces: React.FC<TPieces> = ({ turn, onMove, player1, player2 }) => {
             onMove={movePiece}
             id={piece.id}
             onEat={eatPieces}
+            onEnd={onEnd}
           />
         );
       })}

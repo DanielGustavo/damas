@@ -14,6 +14,7 @@ type TPiece = {
   itsTurn: boolean;
   onMove: (player: TPlayer, curr: number[], next: number[]) => void;
   onEat: (ids: number[]) => void;
+  onEnd: () => void;
   id: number;
 };
 
@@ -27,6 +28,7 @@ const Piece: React.FC<TPiece> = ({
   onMove,
   id,
   onEat,
+  onEnd,
 }) => {
   const [possibleCells, setPossibleCells] = useState<TCell[]>([]);
 
@@ -82,6 +84,10 @@ const Piece: React.FC<TPiece> = ({
                 .map((piece) => piece.id);
 
               onEat(eatenIds);
+
+              if (response.acabou) {
+                onEnd();
+              }
             }}
           />
         ))}

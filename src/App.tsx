@@ -6,8 +6,10 @@ import Board, { EGameState, TPlayer } from './components/Board';
 import { useRef, useState } from 'react';
 import { List, LogIn, RefreshCcw } from 'react-feather';
 import { api } from './services/api';
-import MenuModal from './components/MenuModal';
+import MenuModal, { TRanking } from './components/MenuModal';
 import { TModalRef } from './components/Modal/compositionComponents/Root';
+import { getRanking } from './services/getRanking';
+import { addPlayers } from './services/addPlayers';
 
 function App() {
   const [player1, setPlayer1] = useState<TPlayer>({
@@ -21,6 +23,7 @@ function App() {
     bot: false,
   });
 
+  const [ranking, setRanking] = useState<TRanking[] | undefined>(undefined);
   const [gameState, setGameState] = useState(EGameState.SETUP);
 
   const menuModalRef = useRef<TModalRef>(null);
@@ -58,6 +61,21 @@ function App() {
     e.preventDefault();
 
     await api.put('/reset');
+    const rankingResponse = await getRanking();
+    await addPlayers({
+      player1: player1.name,
+      player2: player2.name,
+    });
+
+    setRanking(() =>
+      rankingResponse?.map((r) => ({
+        name: r.nome,
+        tie: r.empates,
+        wins: r.vitorias,
+        losts: Math.max(r.partidas - r.empates - r.vitorias, 0),
+      }))
+    );
+
     setGameState(EGameState.PLAYING);
   }
 
@@ -118,14 +136,16 @@ function App() {
       <S.Header>
         <Profile name={player1.name} color={theme.colors.primary} />
 
-        <button
-          className="neutral"
-          style={{ width: 'fit-content' }}
-          type="button"
-          onClick={openRanking}
-        >
-          <List color={theme.colors.light} size={'1.3rem'} />
-        </button>
+        {!!ranking?.length && (
+          <button
+            className="neutral"
+            style={{ width: 'fit-content' }}
+            type="button"
+            onClick={openRanking}
+          >
+            <List color={theme.colors.light} size={'1.3rem'} />
+          </button>
+        )}
 
         <Profile name={player2.name} color={theme.colors.secondary} reverse />
       </S.Header>
@@ -144,7 +164,7 @@ function App() {
         <RefreshCcw color={theme.colors.light} size={'1.3rem'} />
       </button>
 
-      <MenuModal ref={menuModalRef} />
+      <MenuModal ranking={ranking} ref={menuModalRef} />
     </S.Container>
   );
 }

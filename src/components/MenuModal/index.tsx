@@ -5,8 +5,19 @@ import Modal from '../Modal/index';
 
 import * as S from './styles';
 
-const MenuModal: React.ForwardRefRenderFunction<TModalRef, unknown> = (
-  _,
+export type TRanking = {
+  name: string;
+  wins: number;
+  tie: number;
+  losts: number;
+};
+
+type TMenuModal = {
+  ranking: TRanking[] | undefined;
+};
+
+const MenuModal: React.ForwardRefRenderFunction<TModalRef, TMenuModal> = (
+  { ranking },
   ref
 ) => {
   return (
@@ -24,27 +35,17 @@ const MenuModal: React.ForwardRefRenderFunction<TModalRef, unknown> = (
             </p>
 
             <div className="list">
-              <S.Item>
-                <p>#1 Daniel</p>{' '}
-                <p>
-                  <span className="green">10</span>/
-                  <span className="red">2</span>/<span>1</span>
-                </p>
-              </S.Item>
-              <S.Item>
-                <p>#2 Daniel</p>{' '}
-                <p>
-                  <span className="green">10</span>/
-                  <span className="red">2</span>/<span>1</span>
-                </p>
-              </S.Item>
-              <S.Item>
-                <p>#3 Daniel</p>{' '}
-                <p>
-                  <span className="green">10</span>/
-                  <span className="red">2</span>/<span>1</span>
-                </p>
-              </S.Item>
+              {ranking?.map((r, index) => (
+                <S.Item key={r.name + index + r.losts}>
+                  <p>
+                    #{index} {r.name}
+                  </p>{' '}
+                  <p>
+                    <span className="green">{r.wins}</span>/
+                    <span className="red">{r.losts}</span>/<span>{r.tie}</span>
+                  </p>
+                </S.Item>
+              ))}
             </div>
           </S.Items>
         </S.ContentContainer>
