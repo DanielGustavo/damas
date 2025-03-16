@@ -1422,6 +1422,11 @@ fastq@^1.6.0:
   dependencies:
     reusify "^1.0.4"
 
+feather-icons-react@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/feather-icons-react/-/feather-icons-react-0.8.1.tgz#ff7ce13900b6dfabfe1e5d287ed4315951b03fa8"
+  integrity sha512-3qGHyiVpUaIyNOFehqQ/bEFLDFXezWWt250g1gJfKokffuVaLt0P+es8kddf+SaxA0qqiK7tt/uxvFXjDscDKw==
+
 file-entry-cache@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/file-entry-cache/-/file-entry-cache-8.0.0.tgz#7787bddcf1131bffb92636c69457bbc0edd6d81f"
