@@ -1,7 +1,7 @@
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 import { theme } from './theme';
-import { darken, lighten, shade } from 'polished';
+import { lighten, shade } from 'polished';
 
 export const Container = styled.div`
   width: 100%;
@@ -12,16 +12,6 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.xxlg};
-`;
-
-const rotation = keyframes`
-  from {
-    transform: rotate(0deg);
-  }
-   
-  to {
-    transform: rotate(360deg);
-  }
 `;
 
 export const SetupContainer = styled.div`
@@ -49,43 +39,6 @@ export const SetupContainer = styled.div`
       display: flex;
       flex-direction: column;
       gap: ${theme.spacing.sm};
-    }
-
-    button {
-      padding: ${theme.spacing.md};
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: ${theme.spacing.sm};
-
-      background: ${theme.colors.success};
-      color: ${theme.colors.dark};
-      font-weight: ${theme.font.firaMono.weight.medium};
-      font-size: ${theme.font.firaMono.size.cta};
-      border-radius: 4px;
-      border: none;
-
-      transition: 200ms;
-
-      .rotate {
-        animation: ${rotation} 1000ms linear 0s infinite forwards;
-      }
-
-      &:hover:not(:disabled) {
-        background: ${shade(0.1)(theme.colors.success)};
-        transform: scale(1.01);
-      }
-
-      &:active:not(:disabled) {
-        background: ${lighten(0.0)(theme.colors.success)};
-        transform: scale(0.99);
-      }
-
-      &:disabled {
-        cursor: not-allowed;
-        background: ${shade(0.5)(theme.colors.success)};
-      }
     }
 
     .checkbox {

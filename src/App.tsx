@@ -3,9 +3,11 @@ import * as S from './styles/app';
 import { theme } from './styles/theme';
 import Profile from './components/Profile';
 import Board, { EGameState, TPlayer } from './components/Board';
-import { useState } from 'react';
-import { LogIn } from 'react-feather';
+import { useRef, useState } from 'react';
+import { List, LogIn, RefreshCcw } from 'react-feather';
 import { api } from './services/api';
+import MenuModal from './components/MenuModal';
+import { TModalRef } from './components/Modal/compositionComponents/Root';
 
 function App() {
   const [player1, setPlayer1] = useState<TPlayer>({
@@ -20,6 +22,8 @@ function App() {
   });
 
   const [gameState, setGameState] = useState(EGameState.SETUP);
+
+  const menuModalRef = useRef<TModalRef>(null);
 
   function onChangeBotCheckbox(checked: boolean) {
     setPlayer2((state) => ({ ...state, bot: checked }));
@@ -55,6 +59,15 @@ function App() {
 
     await api.put('/reset');
     setGameState(EGameState.PLAYING);
+  }
+
+  async function restart() {
+    await api.put('/reset');
+    location.reload();
+  }
+
+  async function openRanking() {
+    menuModalRef.current?.open();
   }
 
   if (gameState === EGameState.SETUP)
@@ -102,12 +115,34 @@ function App() {
     <S.Container>
       <S.Header>
         <Profile name={player1.name} color={theme.colors.primary} />
+
+        <button
+          className="neutral"
+          style={{ width: 'fit-content' }}
+          type="button"
+          onClick={openRanking}
+        >
+          <List color={theme.colors.light} size={'1.3rem'} />
+        </button>
+
         <Profile name={player2.name} color={theme.colors.secondary} reverse />
       </S.Header>
 
       <S.BoardContainer>
         <Board player1={player1} player2={player2} />
       </S.BoardContainer>
+
+      <button
+        className="primary"
+        style={{ width: 'fit-content', margin: '0 auto' }}
+        type="button"
+        onClick={restart}
+      >
+        Reiniciar
+        <RefreshCcw color={theme.colors.light} size={'1.3rem'} />
+      </button>
+
+      <MenuModal ref={menuModalRef} />
     </S.Container>
   );
 }

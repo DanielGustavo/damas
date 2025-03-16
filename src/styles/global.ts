@@ -1,25 +1,19 @@
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle, keyframes } from 'styled-components';
 import { theme } from './theme';
 
+import { lighten, shade } from 'polished';
+
+const rotation = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+   
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
 export const GlobalStyle = createGlobalStyle`
-  @font-face {
-    font-family: 'Fira Mono';
-    src: url('../assets/fonts/FiraMono-Regular.ttf');
-    font-weight: 300;
-  }
-   
-  @font-face {
-    font-family: 'Fira Mono';
-    src: url('../assets/fonts/FiraMono-Medium.ttf');
-    font-weight: 400;
-  }
-   
-  @font-face {
-    font-family: 'Fira Mono';
-    src: url('../assets/fonts/FiraMono-Bold.ttf');
-    font-weight: 700;
-  }
-   
   * {
     padding: 0;
     margin: 0;
@@ -52,5 +46,87 @@ export const GlobalStyle = createGlobalStyle`
 
   small {
     font-size: ${theme.font.firaMono.size.small};
+  }
+
+  button {
+    padding: ${theme.spacing.md};
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: ${theme.spacing.sm};
+
+    background: ${theme.colors.success};
+    color: ${theme.colors.dark};
+    font-weight: ${theme.font.firaMono.weight.medium};
+    font-size: ${theme.font.firaMono.size.cta};
+    border-radius: 16px;
+    border: 4px solid ${shade(0.25)(theme.colors.success)};
+
+    transition: 200ms;
+
+    .rotate {
+      animation: ${rotation} 1000ms linear 0s infinite forwards;
+    }
+
+    &:hover:not(:disabled) {
+      background: ${shade(0.1)(theme.colors.success)};
+      transform: scale(1.01);
+    }
+
+    &:active:not(:disabled) {
+      background: ${lighten(0.0)(theme.colors.success)};
+      transform: scale(0.99);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      background: ${shade(0.5)(theme.colors.success)};
+      border: 4px solid ${shade(0.65)(theme.colors.success)};
+    }
+
+    &.primary {
+      background: ${theme.colors.primary};
+      color: ${theme.colors.light};
+      border: 4px solid ${shade(0.25)(theme.colors.primary)};
+
+      &:hover:not(:disabled) {
+        background: ${shade(0.1)(theme.colors.primary)};
+        transform: scale(1.01);
+      }
+
+      &:active:not(:disabled) {
+        background: ${lighten(0.0)(theme.colors.primary)};
+        transform: scale(0.99);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        background: ${shade(0.5)(theme.colors.primary)};
+        border: 4px solid ${shade(0.65)(theme.colors.primary)};
+      }
+    }
+     
+    &.neutral {
+      background: ${theme.colors.gray};
+      color: ${theme.colors.light};
+      border: 4px solid ${shade(0.25)(theme.colors.gray)};
+
+      &:hover:not(:disabled) {
+        background: ${shade(0.1)(theme.colors.gray)};
+        transform: scale(1.01);
+      }
+
+      &:active:not(:disabled) {
+        background: ${lighten(0.0)(theme.colors.gray)};
+        transform: scale(0.99);
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        background: ${shade(0.5)(theme.colors.gray)};
+        border: 4px solid ${shade(0.65)(theme.colors.gray)};
+      }
+    }
   }
 `;
