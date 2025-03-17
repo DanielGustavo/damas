@@ -2,8 +2,8 @@
 import * as S from './styles/app';
 import { theme } from './styles/theme';
 import Profile from './components/Profile';
-import Board, { EGameState, TPlayer } from './components/Board';
-import { useRef, useState } from 'react';
+import Board, { EGameState, TPiecesRef, TPlayer } from './components/Board';
+import { useEffect, useRef, useState } from 'react';
 import { List, LogIn, RefreshCcw } from 'react-feather';
 import { api } from './services/api';
 import MenuModal, { TRanking } from './components/MenuModal';
@@ -11,6 +11,7 @@ import { TModalRef } from './components/Modal/compositionComponents/Root';
 import { getRanking } from './services/getRanking';
 import { addPlayers } from './services/addPlayers';
 import { activeBot } from './services/activeBot';
+import VictoryModal from './components/VictoryModal';
 
 function App() {
   const [player1, setPlayer1] = useState<TPlayer>({
@@ -26,8 +27,11 @@ function App() {
 
   const [ranking, setRanking] = useState<TRanking[] | undefined>(undefined);
   const [gameState, setGameState] = useState(EGameState.SETUP);
+  const [winner, setWinner] = useState(undefined as TPlayer | undefined);
 
   const menuModalRef = useRef<TModalRef>(null);
+  const victoryModalRef = useRef<TModalRef>(null);
+  const piecesRef = useRef<TPiecesRef>(null);
 
   function onChangeBotCheckbox(checked: boolean) {
     setPlayer2((state) => ({ ...state, bot: checked }));
@@ -58,15 +62,8 @@ function App() {
     }
   }
 
-  async function handleSubmit(e: SubmitEvent) {
-    e.preventDefault();
-
-    await api.put('/reset');
+  async function onEnd(winner?: TPlayer) {
     const rankingResponse = await getRanking();
-    await addPlayers({
-      player1: player1.name,
-      player2: player2.name,
-    });
 
     setRanking(() =>
       rankingResponse?.map((r) => ({
@@ -76,6 +73,20 @@ function App() {
         losts: Math.max(r.partidas - r.empates - r.vitorias, 0),
       }))
     );
+
+    setWinner(winner);
+    victoryModalRef.current?.open();
+  }
+
+  async function handleSubmit(e: SubmitEvent) {
+    e.preventDefault();
+
+    await api.put('/reset');
+    await onEnd();
+    await addPlayers({
+      player1: player1.name,
+      player2: player2.name,
+    });
 
     if (player2.bot) {
       await activeBot();
@@ -87,6 +98,17 @@ function App() {
   async function restart() {
     await api.put('/reset');
     location.reload();
+  }
+
+  async function restartGame() {
+    await api.put('/reset');
+
+    if (player2.bot) {
+      await activeBot();
+    }
+
+    piecesRef.current?.resetCells();
+    victoryModalRef.current?.close();
   }
 
   async function openRanking() {
@@ -156,7 +178,12 @@ function App() {
       </S.Header>
 
       <S.BoardContainer>
-        <Board player1={player1} player2={player2} />
+        <Board
+          player1={player1}
+          player2={player2}
+          onEnd={onEnd}
+          ref={piecesRef}
+        />
       </S.BoardContainer>
 
       <button
@@ -170,6 +197,12 @@ function App() {
       </button>
 
       <MenuModal ranking={ranking} ref={menuModalRef} />
+
+      <VictoryModal
+        winner={winner}
+        ref={victoryModalRef}
+        restartGame={restartGame}
+      />
     </S.Container>
   );
 }

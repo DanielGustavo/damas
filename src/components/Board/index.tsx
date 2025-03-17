@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 
 import Pieces from '../Pieces';
 
@@ -20,9 +20,17 @@ export enum EGameState {
 type TBoard = {
   player1: TPlayer;
   player2: TPlayer;
+  onEnd: (winner?: TPlayer) => void;
 };
 
-const Board: React.FC<TBoard> = ({ player1, player2 }) => {
+export type TPiecesRef = {
+  resetCells: () => void;
+};
+
+const Board: React.ForwardRefRenderFunction<TPiecesRef, TBoard> = (
+  { player1, player2, onEnd },
+  ref
+) => {
   const [turn, setTurn] = useState(player1);
 
   const { Cells } = renderUtils();
@@ -38,6 +46,8 @@ const Board: React.FC<TBoard> = ({ player1, player2 }) => {
         }}
         player1={player1}
         player2={player2}
+        onEnd={onEnd}
+        ref={ref}
       />
 
       <Cells />
@@ -45,4 +55,4 @@ const Board: React.FC<TBoard> = ({ player1, player2 }) => {
   );
 };
 
-export default Board;
+export default forwardRef(Board);

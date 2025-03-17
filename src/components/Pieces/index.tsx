@@ -1,7 +1,12 @@
-import React, { useState } from 'react';
+import React, {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from 'react';
 
 import Piece from '../Piece';
-import { TPlayer } from '../Board';
+import { TPiecesRef, TPlayer } from '../Board';
 import { endPlay } from '../../services/endPlay';
 import { moveBot } from '../../services/moveBot';
 
@@ -10,10 +15,14 @@ type TPieces = {
   onMove: () => void;
   player1: TPlayer;
   player2: TPlayer;
+  onEnd: (winner?: TPlayer) => void;
 };
 
-const Pieces: React.FC<TPieces> = ({ turn, onMove, player1, player2 }) => {
-  const [pieces, setPieces] = useState([
+const Pieces: React.ForwardRefRenderFunction<TPiecesRef, TPieces> = (
+  { turn, onMove, player1, player2, onEnd: onEndFromProps },
+  ref
+) => {
+  const initialPieces = [
     //// PLAYER 0
     { x: 1, y: 0, player: player2, id: 0, crown: false },
     { x: 3, y: 0, player: player2, id: 1, crown: false },
@@ -42,7 +51,20 @@ const Pieces: React.FC<TPieces> = ({ turn, onMove, player1, player2 }) => {
     { x: 2, y: 7, player: player1, id: 21, crown: false },
     { x: 4, y: 7, player: player1, id: 22, crown: false },
     { x: 6, y: 7, player: player1, id: 23, crown: false },
-  ]);
+  ];
+
+  const [pieces, setPieces] = useState([...initialPieces]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      resetCells: () => {
+        const newState = initialPieces.map((p) => ({ ...p }));
+        setPieces(Array.from(newState));
+      },
+    }),
+    []
+  );
 
   async function movePiece(
     player: TPlayer,
@@ -117,19 +139,19 @@ const Pieces: React.FC<TPieces> = ({ turn, onMove, player1, player2 }) => {
   }
 
   async function onEnd() {
-    let winner = undefined as undefined | number;
+    let winner = undefined as undefined | TPlayer;
 
     const player1Pieces = pieces.filter((p) => p.player.id === player1.id);
     const player2Pieces = pieces.filter((p) => p.player.id === player2.id);
 
     if (player1Pieces.length > player2Pieces.length) {
-      winner = player1.id;
+      winner = player1;
     } else if (player1Pieces.length < player2Pieces.length) {
-      winner = player2.id;
+      winner = player2;
     }
 
     await endPlay();
-    alert(winner);
+    onEndFromProps(winner);
   }
 
   return (
@@ -154,4 +176,4 @@ const Pieces: React.FC<TPieces> = ({ turn, onMove, player1, player2 }) => {
   );
 };
 
-export default Pieces;
+export default forwardRef(Pieces);

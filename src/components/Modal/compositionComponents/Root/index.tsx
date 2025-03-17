@@ -13,6 +13,7 @@ import { Background, BackgroundBlur, Container, Header } from './styles';
 export type TModal = {
   children?: React.ReactNode;
   onClose?: () => void;
+  className?: string;
 };
 
 export type TModalRef = {
@@ -21,7 +22,7 @@ export type TModalRef = {
 };
 
 const Modal: React.ForwardRefRenderFunction<TModalRef, TModal> = (
-  { children, onClose },
+  { children, onClose, className },
   ref
 ) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,7 +76,7 @@ const Modal: React.ForwardRefRenderFunction<TModalRef, TModal> = (
         fadeMilliseconds={fadeMilliseconds}
         open={isOpen}
       >
-        <Container>
+        <Container className={className}>
           <Header>
             <button type="button" onClick={close}>
               <FeatherIcon strokeWidth="2px" icon="x" />
