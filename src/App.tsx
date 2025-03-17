@@ -12,6 +12,7 @@ import { getRanking } from './services/getRanking';
 import { addPlayers } from './services/addPlayers';
 import { activeBot } from './services/activeBot';
 import VictoryModal from './components/VictoryModal';
+import { tie } from './services/tie';
 
 function App() {
   const [player1, setPlayer1] = useState<TPlayer>({
@@ -62,7 +63,7 @@ function App() {
     }
   }
 
-  async function onEnd(winner?: TPlayer) {
+  async function fetchRanking() {
     const rankingResponse = await getRanking();
 
     setRanking(() =>
@@ -73,6 +74,10 @@ function App() {
         losts: Math.max(r.partidas - r.empates - r.vitorias, 0),
       }))
     );
+  }
+
+  async function onEnd(winner?: TPlayer) {
+    await fetchRanking();
 
     if (winner) {
       setWinner(winner);
@@ -117,6 +122,20 @@ function App() {
 
   async function openRanking() {
     menuModalRef.current?.open();
+  }
+
+  async function callTie() {
+    await tie();
+    await api.put('/reset');
+
+    if (player2.bot) {
+      await activeBot();
+    }
+
+    await addPlayers({ player1: player1.name, player2: player2.name });
+
+    piecesRef.current?.resetCells();
+    await fetchRanking();
   }
 
   useEffect(() => {
@@ -218,15 +237,25 @@ function App() {
         />
       </S.BoardContainer>
 
-      <button
-        className="primary"
-        style={{ width: 'fit-content', margin: '0 auto' }}
-        type="button"
-        onClick={restart}
-      >
-        Reiniciar
-        <RefreshCcw color={theme.colors.light} size={'1.3rem'} />
-      </button>
+      <div className="buttons">
+        <button
+          className="primary"
+          style={{ width: 'fit-content', margin: '0 auto' }}
+          type="button"
+          onClick={restart}
+        >
+          Reiniciar
+          <RefreshCcw color={theme.colors.light} size={'1.3rem'} />
+        </button>
+
+        <button
+          style={{ width: 'fit-content', margin: '0 auto' }}
+          type="button"
+          onClick={callTie}
+        >
+          Empate
+        </button>
+      </div>
 
       <MenuModal ranking={ranking} ref={menuModalRef} />
 

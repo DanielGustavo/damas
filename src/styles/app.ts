@@ -12,6 +12,18 @@ export const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${theme.spacing.xxlg};
+
+  div.buttons {
+    display: flex;
+    gap: 16px;
+
+    margin: 0 auto;
+    width: 25%;
+
+    button {
+      flex: 1;
+    }
+  }
 `;
 
 export const SetupContainer = styled.div`
