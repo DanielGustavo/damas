@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Piece from '../Piece';
 import { TPlayer } from '../Board';
 import { endPlay } from '../../services/endPlay';
+import { moveBot } from '../../services/moveBot';
 
 type TPieces = {
   turn: TPlayer;
@@ -14,36 +15,41 @@ type TPieces = {
 const Pieces: React.FC<TPieces> = ({ turn, onMove, player1, player2 }) => {
   const [pieces, setPieces] = useState([
     //// PLAYER 0
-    { x: 1, y: 0, player: player1, id: 0 },
-    { x: 3, y: 0, player: player1, id: 1 },
-    { x: 5, y: 0, player: player1, id: 2 },
-    { x: 7, y: 0, player: player1, id: 3 },
-    { x: 0, y: 1, player: player1, id: 4 },
-    { x: 2, y: 1, player: player1, id: 5 },
-    { x: 4, y: 1, player: player1, id: 6 },
-    { x: 6, y: 1, player: player1, id: 7 },
-    { x: 1, y: 2, player: player1, id: 8 },
-    { x: 3, y: 2, player: player1, id: 9 },
-    { x: 5, y: 2, player: player1, id: 10 },
-    { x: 7, y: 2, player: player1, id: 11 },
+    { x: 1, y: 0, player: player2, id: 0, crown: false },
+    { x: 3, y: 0, player: player2, id: 1, crown: false },
+    { x: 5, y: 0, player: player2, id: 2, crown: false },
+    { x: 7, y: 0, player: player2, id: 3, crown: false },
+    { x: 0, y: 1, player: player2, id: 4, crown: false },
+    { x: 2, y: 1, player: player2, id: 5, crown: false },
+    { x: 4, y: 1, player: player2, id: 6, crown: false },
+    { x: 6, y: 1, player: player2, id: 7, crown: false },
+    { x: 1, y: 2, player: player2, id: 8, crown: false },
+    { x: 3, y: 2, player: player2, id: 9, crown: false },
+    { x: 5, y: 2, player: player2, id: 10, crown: false },
+    { x: 7, y: 2, player: player2, id: 11, crown: false },
 
     // PLAYER 1
 
-    { x: 0, y: 5, player: player2, id: 12 },
-    { x: 2, y: 5, player: player2, id: 13 },
-    { x: 4, y: 5, player: player2, id: 14 },
-    { x: 6, y: 5, player: player2, id: 15 },
-    { x: 1, y: 6, player: player2, id: 16 },
-    { x: 3, y: 6, player: player2, id: 17 },
-    { x: 5, y: 6, player: player2, id: 18 },
-    { x: 7, y: 6, player: player2, id: 19 },
-    { x: 0, y: 7, player: player2, id: 20 },
-    { x: 2, y: 7, player: player2, id: 21 },
-    { x: 4, y: 7, player: player2, id: 22 },
-    { x: 6, y: 7, player: player2, id: 23 },
+    { x: 0, y: 5, player: player1, id: 12, crown: false },
+    { x: 2, y: 5, player: player1, id: 13, crown: false },
+    { x: 4, y: 5, player: player1, id: 14, crown: false },
+    { x: 6, y: 5, player: player1, id: 15, crown: false },
+    { x: 1, y: 6, player: player1, id: 16, crown: false },
+    { x: 3, y: 6, player: player1, id: 17, crown: false },
+    { x: 5, y: 6, player: player1, id: 18, crown: false },
+    { x: 7, y: 6, player: player1, id: 19, crown: false },
+    { x: 0, y: 7, player: player1, id: 20, crown: false },
+    { x: 2, y: 7, player: player1, id: 21, crown: false },
+    { x: 4, y: 7, player: player1, id: 22, crown: false },
+    { x: 6, y: 7, player: player1, id: 23, crown: false },
   ]);
 
-  function movePiece(player: TPlayer, curr: number[], next: number[]) {
+  async function movePiece(
+    player: TPlayer,
+    curr: number[],
+    next: number[],
+    crown: boolean
+  ) {
     setPieces((state) => {
       const newState = [...state];
 
@@ -58,16 +64,54 @@ const Pieces: React.FC<TPieces> = ({ turn, onMove, player1, player2 }) => {
       if (piece) {
         piece.x = next[0];
         piece.y = next[1];
+        piece.crown = crown;
       }
 
       return newState;
     });
+
+    if (player2.bot) {
+      const botMove = await moveBot();
+      console.log({ botMove });
+
+      setTimeout(() => {
+        setPieces((state) => {
+          const newState = [...state];
+
+          const botPiece = state.find((piece) => {
+            return piece.id === botMove.peca.id;
+          });
+
+          if (botPiece) {
+            botPiece.x = botMove.peca.coordenadas.x;
+            botPiece.y = botMove.peca.coordenadas.y;
+            botPiece.crown = botMove.peca.rainha;
+          }
+
+          return newState;
+        });
+
+        eatPieces(botMove.jogador2.filter((p) => !!p).map((p) => p.id));
+
+        if (botMove.acabou) {
+          onEnd();
+        }
+      }, 1000);
+    }
 
     onMove();
   }
 
   function eatPieces(ids: number[]) {
     setPieces((state) => {
+      const eaten = state.filter(({ id }) => ids.includes(id));
+
+      eaten.forEach((p) => {
+        console.log(
+          `${p.player.id === player1.id ? player2.name : player1.name} eaten ${p.id}`
+        );
+      });
+
       return state.filter(({ id }) => !ids.includes(id));
     });
   }
@@ -84,8 +128,6 @@ const Pieces: React.FC<TPieces> = ({ turn, onMove, player1, player2 }) => {
       winner = player2.id;
     }
 
-    console.log({ player1Pieces, player2Pieces, player1, player2, pieces });
-
     await endPlay();
     alert(winner);
   }
@@ -98,12 +140,13 @@ const Pieces: React.FC<TPieces> = ({ turn, onMove, player1, player2 }) => {
             x={piece.x}
             y={piece.y}
             player={piece.player}
-            key={`${piece.x}${piece.y}${piece.player}`}
+            key={`${piece.x}${piece.y}${piece.player.id}${piece.id}`}
             itsTurn={turn.id === piece.player.id}
             onMove={movePiece}
             id={piece.id}
             onEat={eatPieces}
             onEnd={onEnd}
+            crown={piece.crown}
           />
         );
       })}

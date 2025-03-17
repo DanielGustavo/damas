@@ -9,7 +9,6 @@ import { createPortal } from 'react-dom';
 import FeatherIcon from 'feather-icons-react';
 
 import { Background, BackgroundBlur, Container, Header } from './styles';
-import { theme } from '../../../../styles/theme';
 
 export type TModal = {
   children?: React.ReactNode;

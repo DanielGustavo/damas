@@ -14,7 +14,7 @@ export const Container = styled.div<TContainer>`
   outline: 8px solid
     ${({ turn }) =>
       polished.lighten(0.05)(
-        turn === 1 ? theme.colors.secondary : theme.colors.primary
+        turn === 0 ? theme.colors.secondary : theme.colors.primary
       )};
   border-radius: 9px;
   outline-offset: -1px;

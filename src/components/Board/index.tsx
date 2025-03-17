@@ -23,7 +23,7 @@ type TBoard = {
 };
 
 const Board: React.FC<TBoard> = ({ player1, player2 }) => {
-  const [turn, setTurn] = useState(player2);
+  const [turn, setTurn] = useState(player1);
 
   const { Cells } = renderUtils();
 
@@ -31,8 +31,10 @@ const Board: React.FC<TBoard> = ({ player1, player2 }) => {
     <S.Container turn={turn.id}>
       <Pieces
         turn={turn}
-        onMove={() => {
-          setTurn((state) => (state.id === player2.id ? player1 : player2));
+        onMove={async () => {
+          if (!player2.bot) {
+            setTurn((state) => (state.id === player2.id ? player1 : player2));
+          }
         }}
         player1={player1}
         player2={player2}

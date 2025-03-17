@@ -1,11 +1,5 @@
 import { api } from './api';
 
-type Request = {
-  id: number;
-  x: number;
-  y: number;
-};
-
 type Response = {
   peca: {
     rainha: boolean;
@@ -38,11 +32,8 @@ type Response = {
   acabou: boolean;
 };
 
-export async function movePiece({ id, x, y }: Request) {
-  const response = await api.post('/moverpeca', {
-    id,
-    coordenada: { x: y, y: x },
-  });
+export async function moveBot() {
+  const response = await api.put(`/moverbot`);
 
   const data = response.data as Response;
 

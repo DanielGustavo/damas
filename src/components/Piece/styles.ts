@@ -17,6 +17,11 @@ type TPossibleCell = {
 };
 
 export const Container = styled.div<TContainer>`
+  p {
+    z-index: 99999;
+    position: absolute;
+  }
+
   position: absolute;
 
   top: ${({ y }) => y * 88}px;

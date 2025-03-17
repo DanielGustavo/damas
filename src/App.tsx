@@ -10,6 +10,7 @@ import MenuModal, { TRanking } from './components/MenuModal';
 import { TModalRef } from './components/Modal/compositionComponents/Root';
 import { getRanking } from './services/getRanking';
 import { addPlayers } from './services/addPlayers';
+import { activeBot } from './services/activeBot';
 
 function App() {
   const [player1, setPlayer1] = useState<TPlayer>({
@@ -76,6 +77,10 @@ function App() {
       }))
     );
 
+    if (player2.bot) {
+      await activeBot();
+    }
+
     setGameState(EGameState.PLAYING);
   }
 
@@ -134,7 +139,7 @@ function App() {
   return (
     <S.Container>
       <S.Header>
-        <Profile name={player1.name} color={theme.colors.primary} />
+        <Profile name={player1.name} color={theme.colors.secondary} />
 
         {!!ranking?.length && (
           <button
@@ -147,7 +152,7 @@ function App() {
           </button>
         )}
 
-        <Profile name={player2.name} color={theme.colors.secondary} reverse />
+        <Profile name={player2.name} color={theme.colors.primary} reverse />
       </S.Header>
 
       <S.BoardContainer>

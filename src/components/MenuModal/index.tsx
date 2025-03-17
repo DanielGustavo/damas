@@ -35,17 +35,20 @@ const MenuModal: React.ForwardRefRenderFunction<TModalRef, TMenuModal> = (
             </p>
 
             <div className="list">
-              {ranking?.map((r, index) => (
-                <S.Item key={r.name + index + r.losts}>
-                  <p>
-                    #{index} {r.name}
-                  </p>{' '}
-                  <p>
-                    <span className="green">{r.wins}</span>/
-                    <span className="red">{r.losts}</span>/<span>{r.tie}</span>
-                  </p>
-                </S.Item>
-              ))}
+              {ranking
+                ?.sort((a, b) => b.wins - a.wins)
+                ?.map((r, index) => (
+                  <S.Item key={r.name + index + r.losts}>
+                    <p>
+                      #{index + 1} {r.name}
+                    </p>{' '}
+                    <p>
+                      <span className="green">{r.wins}</span>/
+                      <span className="red">{r.losts}</span>/
+                      <span>{r.tie}</span>
+                    </p>
+                  </S.Item>
+                ))}
             </div>
           </S.Items>
         </S.ContentContainer>

@@ -12,10 +12,16 @@ type TPiece = {
   y: number;
   player: TPlayer;
   itsTurn: boolean;
-  onMove: (player: TPlayer, curr: number[], next: number[]) => void;
+  onMove: (
+    player: TPlayer,
+    curr: number[],
+    next: number[],
+    crown: boolean
+  ) => void;
   onEat: (ids: number[]) => void;
   onEnd: () => void;
   id: number;
+  crown: boolean;
 };
 
 type TCell = { x: number; y: number };
@@ -29,6 +35,7 @@ const Piece: React.FC<TPiece> = ({
   id,
   onEat,
   onEnd,
+  crown,
 }) => {
   const [possibleCells, setPossibleCells] = useState<TCell[]>([]);
 
@@ -73,11 +80,12 @@ const Piece: React.FC<TPiece> = ({
             key={`${cell.x}${cell.y}possible${player.id}`}
             onClick={async () => {
               setPossibleCells([]);
-              onMove(player, [x, y], [cell.x, cell.y]);
 
               const response = await movePiece({ id, x: cell.x, y: cell.y });
               const eatenSource =
-                player.id === 0 ? response.jogador2 : response.jogador1;
+                player.id === 1 ? response.jogador2 : response.jogador1;
+
+              onMove(player, [x, y], [cell.x, cell.y], response.peca.rainha);
 
               const eatenIds = eatenSource
                 .filter((piece) => piece != null)
@@ -93,8 +101,8 @@ const Piece: React.FC<TPiece> = ({
         ))}
 
       <S.Container
-        color={player.id === 0 ? theme.colors.primary : theme.colors.secondary}
-        crown={false}
+        color={player.id === 1 ? theme.colors.primary : theme.colors.secondary}
+        crown={crown}
         x={x}
         y={y}
         itsTurn={itsTurn}
@@ -108,7 +116,9 @@ const Piece: React.FC<TPiece> = ({
         ref={ref}
         selected={selected}
         id={`${x}${y}${player.id}`}
-      />
+      >
+        <p>{id}</p>
+      </S.Container>
     </>
   );
 };
