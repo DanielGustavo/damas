@@ -96,3 +96,14 @@ export const Header = styled.header`
 
   justify-content: space-between;
 `;
+
+export const SetupHeader = styled.header`
+  display: flex;
+  width: 100%;
+
+  position: absolute;
+  top: 0;
+  padding-top: 24px;
+
+  justify-content: center;
+`;

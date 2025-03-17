@@ -119,9 +119,35 @@ function App() {
     menuModalRef.current?.open();
   }
 
+  useEffect(() => {
+    getRanking().then((rankingResponse) => {
+      setRanking(() =>
+        rankingResponse?.map((r) => ({
+          name: r.nome,
+          tie: r.empates,
+          wins: r.vitorias,
+          losts: Math.max(r.partidas - r.empates - r.vitorias, 0),
+        }))
+      );
+    });
+  }, [gameState]);
+
   if (gameState === EGameState.SETUP)
     return (
       <S.SetupContainer>
+        <S.SetupHeader>
+          {!!ranking?.length && (
+            <button
+              className="neutral"
+              style={{ width: 'fit-content' }}
+              type="button"
+              onClick={openRanking}
+            >
+              <List color={theme.colors.light} size={'1.3rem'} />
+            </button>
+          )}
+        </S.SetupHeader>
+
         <form onSubmit={handleSubmit as any}>
           <div className="inputs">
             <input
@@ -159,6 +185,8 @@ function App() {
             Iniciar <LogIn color={theme.colors.dark} size={'1.3rem'} />
           </button>
         </form>
+
+        <MenuModal ranking={ranking} ref={menuModalRef} />
       </S.SetupContainer>
     );
 
