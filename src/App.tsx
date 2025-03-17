@@ -89,7 +89,7 @@ function App() {
     e.preventDefault();
 
     await api.put('/reset');
-    await onEnd();
+    await fetchRanking();
     await addPlayers({
       player1: player1.name,
       player2: player2.name,
@@ -139,16 +139,7 @@ function App() {
   }
 
   useEffect(() => {
-    getRanking().then((rankingResponse) => {
-      setRanking(() =>
-        rankingResponse?.map((r) => ({
-          name: r.nome,
-          tie: r.empates,
-          wins: r.vitorias,
-          losts: Math.max(r.partidas - r.empates - r.vitorias, 0),
-        }))
-      );
-    });
+    fetchRanking();
   }, [gameState]);
 
   if (gameState === EGameState.SETUP)

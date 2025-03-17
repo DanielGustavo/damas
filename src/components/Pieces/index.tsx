@@ -1,9 +1,4 @@
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from 'react';
+import React, { forwardRef, useImperativeHandle, useState } from 'react';
 
 import Piece from '../Piece';
 import { TPiecesRef, TPlayer } from '../Board';
