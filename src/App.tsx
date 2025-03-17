@@ -74,8 +74,10 @@ function App() {
       }))
     );
 
-    setWinner(winner);
-    victoryModalRef.current?.open();
+    if (winner) {
+      setWinner(winner);
+      victoryModalRef.current?.open();
+    }
   }
 
   async function handleSubmit(e: SubmitEvent) {
@@ -106,6 +108,8 @@ function App() {
     if (player2.bot) {
       await activeBot();
     }
+
+    await addPlayers({ player1: player1.name, player2: player2.name });
 
     piecesRef.current?.resetCells();
     victoryModalRef.current?.close();
